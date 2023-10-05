@@ -5,7 +5,7 @@ document.addEventListener('DOMContentLoaded', () => {
   const start = async() => {
     const mindarThree = new window.MINDAR.IMAGE.MindARThree({
       container: document.body,
-      imageTargetSrc: '../../assets/targets/f000h.mind',
+      imageTargetSrc: '../../assets/targets/f001e_f001h.mind',
     });
     const {renderer, scene, camera} = mindarThree;
 
@@ -23,7 +23,7 @@ light.position.set( 10, 10, 10 );
     
     scene.add(light);
 
-    const gltf = await loadGLTF('../../assets/models/musicband-raccoon/f000e_f000h/f000e_f000h.gltf');
+    const gltf = await loadGLTF('../../assets/models/musicband-raccoon/f001e_f001h/f001e_f001h.gltf');
     gltf.scene.scale.set(0.25, 0.25, 0.25);
     gltf.scene.position.set(0, -0.4, 0);
 
