@@ -24,7 +24,7 @@ light.position.set( 10, 10, 10 );
     scene.add(light);
 
     const gltf = await loadGLTF('../../assets/models/musicband-raccoon/f001e_f001h/f001e_f001h.gltf');
-    gltf.scene.scale.set(0.25, 0.25, 0.25);
+    gltf.scene.scale.set(0.50, 0.50, 0.50);
     gltf.scene.position.set(0, -0.4, 0);
 
     const anchor = mindarThree.addAnchor(0);
