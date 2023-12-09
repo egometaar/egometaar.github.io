@@ -1,0 +1,91 @@
+<html>
+  <head>
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <script src="https://aframe.io/releases/1.4.2/aframe.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/gh/donmccurdy/aframe-extras/dist/aframe-extras.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/mind-ar/dist/mindar-image-aframe.prod.js"></script>
+    <script>
+      document.addEventListener("DOMContentLoaded", function() {
+	const sceneEl = document.querySelector('a-scene');
+	let arSystem;
+	sceneEl.addEventListener('loaded', function () {
+	  arSystem = sceneEl.systems["mindar-image-system"];
+	});
+	const examplePlane = document.querySelector('#example-plane');
+	const startButton = document.querySelector("#example-start-button");
+	const jumpButton = document.querySelector("#example-jump-button");
+	const pauseButton = document.querySelector("#example-pause-button");
+	// add a variable to store the animation state
+	let isPaused = false;
+	// add a variable to store the button text
+	let pauseText = "Pause";
+	startButton.addEventListener('click', () => {
+	  console.log("start");
+	  arSystem.start(); // start AR 
+	});
+	jumpButton.addEventListener('click', () => {
+	  // get the current position of the raccoon
+	  let position = examplePlane.getAttribute("position");
+	  // increase the y coordinate by 0.5
+	  position.y += 0.5;
+	  // set the new position of the raccoon
+	  examplePlane.setAttribute("position", position);
+	});
+	// add a click event to the pause button
+	pauseButton.addEventListener('click', () => {
+	  // toggle the value of isPaused
+	  isPaused = !isPaused;
+	  // call the function to pause or resume the animation
+	  pauseOrResumeAnimation();
+	  // change the value of pauseText according to isPaused
+	  if (isPaused) {
+	    pauseText = "Play";
+	  }
+	  else {
+	    pauseText = "Pause";
+	  }
+	  // update the innerHTML attribute of the pause button
+	  // change this line to use innerHTML instead of setAttribute
+	  pauseButton.innerHTML = pauseText;
+	});
+	// create a function to pause or resume the animation
+	function pauseOrResumeAnimation() {
+	  // get the animation-mixer component of the raccoon
+	  let animationMixer = examplePlane.components["animation-mixer"];
+	  // if isPaused is true, pause the animation
+	  if (isPaused) {
+	    animationMixer.pause();
+	  }
+	  // else, resume the animation
+	  else {
+	    animationMixer.play();
+	  }
+	}
+	sceneEl.addEventListener("arReady", (event) => {
+	  // console.log("MindAR is ready")
+	});
+	sceneEl.addEventListener("arError", (event) => {
+	  // console.log("MindAR failed to start")
+	});
+      });
+    </script>
+  </head>
+  <body>
+    <div style="position: absolute; z-index: 1000">
+      <button id="example-start-button">Start</button>
+      <!-- add a new button to make the raccoon jump -->
+      <button id="example-jump-button">Jump</button>
+      <!-- add a new button to pause the animation -->
+      <!-- add an innerHTML attribute to the button -->
+      <button id="example-pause-button" innerHTML="Pause">Pause</button>
+    </div>
+    <a-scene mindar-image="imageTargetSrc: https://egometaar.github.io/assets/targets/f000e.mind; autoStart: false;" color-space="sRGB" renderer="colorManagement: true, physicallyCorrectLights" vr-mode-ui="enabled: false" device-orientation-permission-ui="enabled: false">
+      <a-asset-item id="raccoonModel" src="https://egometaar.github.io/assets/models/musicband-raccoon/f000e_f000h/f000e_f000h.gltf"></a-asset-item>
+      <a-camera position="0 0 0" look-controls="enabled: false" cursor="fuse: false; rayOrigin: mouse;" raycaster="near: 10; far: 10000; objects: .clickable"></a-camera>
+      <a-entity mindar-image-target="targetIndex: 0">
+	<a-gltf-model id="example-plane" rotation="0 0 0 " position="0 -0.25 0" scale="0.25 0.25 0.25" src="#raccoonModel" animation-mixer>
+	</a-gltf-model>
+      </a-entity>
+    </a-scene>
+  </body>
+</html>
