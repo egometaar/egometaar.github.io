@@ -1,0 +1,107 @@
+<html>
+    <head>
+      <meta name="viewport" content="width=device-width, initial-scale=1" />
+      <script src="https://aframe.io/releases/1.4.2/aframe.min.js"></script>
+      <script src="https://cdn.jsdelivr.net/gh/donmccurdy/aframe-extras/dist/aframe-extras.min.js"></script>
+      <script src="https://cdn.jsdelivr.net/npm/mind-ar/dist/mindar-image-aframe.prod.js"></script>
+      <script>
+        document.addEventListener("DOMContentLoaded", function() {
+      const sceneEl = document.querySelector('a-scene');
+      let arSystem;
+      sceneEl.addEventListener('loaded', function () {
+        arSystem = sceneEl.systems["mindar-image-system"];
+      });
+      const examplePlane = document.querySelector('#example-plane');
+      const startButton = document.querySelector("#example-start-button");
+      const jumpButton = document.querySelector("#example-jump-button");
+      const dropButton = document.querySelector("#example-drop-button");
+      const rightButton = document.querySelector("#example-right-button");
+      const leftButton = document.querySelector("#example-left-button"); // new left button
+      const pauseButton = document.querySelector("#example-pause-button");
+      let isPaused = false;
+      let pauseText = "Pause";
+      startButton.addEventListener('click', () => {
+        console.log("start");
+        arSystem.start(); // start AR 
+      });
+      jumpButton.addEventListener('click', () => {
+        let position = examplePlane.getAttribute("position");
+        position.y += 0.5;
+        examplePlane.setAttribute("position", position);
+      });
+      dropButton.addEventListener('click', () => {
+        let position = examplePlane.getAttribute("position");
+        position.y -= 0.5;
+        examplePlane.setAttribute("position", position);
+      });
+      rightButton.addEventListener('click', () => {
+        let position = examplePlane.getAttribute("position");
+        position.x += 0.5;
+        examplePlane.setAttribute("position", position);
+      });
+      leftButton.addEventListener('click', () => { // event for left button
+        let position = examplePlane.getAttribute("position");
+        position.x -= 0.5; // decrease the x coordinate
+        examplePlane.setAttribute("position", position);
+      });
+      pauseButton.addEventListener('click', () => {
+        isPaused = !isPaused;
+        pauseOrResumeAnimation();
+        if (isPaused) {
+          pauseText = "Play";
+        }
+        else {
+          pauseText = "Pause";
+        }
+        pauseButton.innerHTML = pauseText;
+      });
+      function pauseOrResumeAnimation() {
+        let animationMixer = examplePlane.components["animation-mixer"];
+        if (isPaused) {
+          animationMixer.pause();
+        }
+        else {
+          animationMixer.play();
+        }
+      }
+      examplePlane.addEventListener('click', () => {
+        isPaused = !isPaused;
+        pauseOrResumeAnimation();
+        if (isPaused) {
+          pauseText = "Play";
+        }
+        else {
+          pauseText = "Pause";
+        }
+        pauseButton.innerHTML = pauseText;
+      });
+      sceneEl.addEventListener("arReady", (event) => {
+        // console.log("MindAR is ready")
+      });
+      sceneEl.addEventListener("arError", (event) => {
+        // console.log("MindAR failed to start")
+      });
+        });
+      </script>
+</head>
+    <body>
+      <div style="position: absolute; z-index: 1000">
+        <button id="example-start-button" data-action="start">Start</button>
+        <button id="example-jump-button" data-action="jump">Jump</button>
+        <button id="example-drop-button" data-action="drop">Drop</button>
+        <button id="example-right-button" data-action="right">Right</button>
+        <button id="example-left-button" data-action="left">Left</button> <!-- new left button -->
+        <button id="example-pause-button" data-action="pause" innerHTML="Pause">Pause</button>
+      </div>
+      <a-scene mindar-image="imageTargetSrc: https://egometaar.github.io/assets/targets/f000e.mind; autoStart: false;" color-space="sRGB" renderer="colorManagement: true, physicallyCorrectLights" vr-mode-ui="enabled: false" device-orientation-permission-ui="enabled: false">
+        <a-asset-item id="raccoonModel" src="https://egometaar.github.io/assets/models/musicband-raccoon/f000e_f000h/f000e_f000h.gltf"></a-asset-item>
+        <a-camera position="0 0 0" look-controls="enabled: false" cursor="fuse: false; rayOrigin: mouse;" raycaster="near: 10; far: 10000; objects: .clickable"></a-camera>
+        <a-entity mindar-image-target="targetIndex: 0">
+      <a-gltf-model id="example-plane" class="clickable" rotation="0 0 0 " position="0 -0.25 0" scale="0.25 0.25 0.25" src="#raccoonModel" animation-mixer>
+      </a-gltf-model>
+      <a-box id="example-box" class="clickable" rotation="0 0 0 " position="0 -0.25 0" scale="0.25 0.5 0.25" visible="false">
+      </a-box>
+        </a-entity>
+      </a-scene>
+    </body>
+  </html>
