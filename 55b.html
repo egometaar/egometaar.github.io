@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <script src="https://aframe.io/releases/1.4.2/aframe.min.js"></script>
+    <script src="animation-mixer.js"></script>
+    <script src="https://cdn.jsdelivr.net/gh/donmccurdy/aframe-extras/dist/aframe-extras.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/mind-ar/dist/mindar-image-aframe.prod.js"></script>
+    <script>
+      document.addEventListener("DOMContentLoaded", function() {
+        const sceneEl = document.querySelector('a-scene');
+        let arSystem;
+        let isPaused = true; // define isPaused
+        sceneEl.addEventListener('loaded', function () {
+          arSystem = sceneEl.systems["mindar-image-system"];
+        });
+        const examplePlane = document.querySelector('#example-plane');
+        const startButton = document.querySelector("#example-start-button");
+        startButton.addEventListener('click', () => {
+          console.log("start");
+          arSystem.start(); // start AR 
+        });
+        examplePlane.addEventListener('model-loaded', () => { // new event listener for model-loaded
+          let animationMixer = examplePlane.components["animation-mixer"];
+          animationMixer.pause(); // pause the animation
+        });
+        examplePlane.addEventListener('click', () => { // event for clicking the plane
+          isPaused = !isPaused; // toggle isPaused
+          let animationMixer = examplePlane.components["animation-mixer"];
+          if (isPaused) {
+            animationMixer.pause(); // pause the animation
+          } else {
+            animationMixer.play(); // play the animation
+          }
+        });
+        sceneEl.addEventListener("arReady", (event) => {
+          // console.log("MindAR is ready")
+        });
+        sceneEl.addEventListener("arError", (event) => {
+          // console.log("MindAR failed to start")
+        });
+      });
+    </script>
+  </head>
+  <body>
+    <div style="position: absolute; z-index: 1000">
+      <button id="example-start-button" data-action="start">Start</button>
+    </div>
+    <a-scene mindar-image="imageTargetSrc:  https://egometaar.github.io/assets/targets/f000e.mind; autoStart: false;" color-space="sRGB" renderer="colorManagement: true, physicallyCorrectLights" vr-mode-ui="enabled: false" device-orientation-permission-ui="enabled: false">
+      <a-asset-item id="raccoonModel" src="https://egometaar.github.io/assets/models/musicband-raccoon/f000e_f000h/f000e_f000h.gltf"></a-asset-item>
+      <a-camera position="0 0 0" look-controls="enabled: false" cursor="fuse: false; rayOrigin: mouse;" raycaster="near: 10; far: 10000; objects: .clickable"></a-camera>
+      <a-entity mindar-image-target="targetIndex: 0">
+        <a-gltf-model id="example-plane" class="clickable" rotation="0 0 0 " position="0 -0.25 0" scale="1 1 1" src="#raccoonModel" animation-mixer>
+        </a-gltf-model>
+      </a-entity>
+    </a-scene>
+  </body>
+</html>
