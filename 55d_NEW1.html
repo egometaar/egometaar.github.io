@@ -1,0 +1,158 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <script src="https://aframe.io/releases/1.4.2/aframe.min.js"></script>
+    <script src="animation-mixer.js"></script>
+    <script src="https://cdn.jsdelivr.net/gh/donmccurdy/aframe-extras/dist/aframe-extras.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/mind-ar/dist/mindar-image-aframe.prod.js"></script>
+    <script>
+      document.addEventListener("DOMContentLoaded", function() {
+        const sceneEl = document.querySelector('a-scene');
+        let arSystem;
+        let isPaused = true; // define isPaused
+        sceneEl.addEventListener('loaded', function () {
+          arSystem = sceneEl.systems["mindar-image-system"];
+        });
+        const examplePlane = document.querySelector('#example-plane');
+        const startButton = document.querySelector("#example-start-button");
+        const jumpButton = document.querySelector("#example-jump-button"); // new jump button
+        const dropButton = document.querySelector("#example-drop-button"); // new drop button
+        const rightButton = document.querySelector("#example-right-button"); // new right button
+        const leftButton = document.querySelector("#example-left-button"); // new left button
+        const pauseSphere = document.querySelector("#example-pause-sphere"); // new pause sphere
+        const rightTriangle = document.querySelector("#example-right-triangle"); // new right triangle
+        const leftTriangle = document.querySelector("#example-left-triangle"); // new left triangle
+        const jumpTriangle = document.querySelector("#example-jump-triangle"); // new jump triangle
+        const dropTriangle = document.querySelector("#example-drop-triangle"); // new drop triangle
+        const rotateXButton = document.querySelector("#example-rotateX-button");
+        const rotateYButton = document.querySelector("#example-rotateY-button");
+        let pauseColor = "green"; // new pause color
+        startButton.addEventListener('click', () => {
+          console.log("start");
+          arSystem.start(); // start AR 
+        });
+        jumpButton.addEventListener('click', () => { // event for jump button
+          let position = examplePlane.getAttribute("position");
+          position.y += 0.1;
+          examplePlane.setAttribute("position", position);
+        });
+        dropButton.addEventListener('click', () => { // event for drop button
+          let position = examplePlane.getAttribute("position");
+          position.y -= 0.1;
+          examplePlane.setAttribute("position", position);
+        });
+        rightButton.addEventListener('click', () => { // event for right button
+          let position = examplePlane.getAttribute("position");
+          position.x += 0.1;
+          examplePlane.setAttribute("position", position);
+        });
+        leftButton.addEventListener('click', () => { // event for left button
+          let position = examplePlane.getAttribute("position");
+          position.x -= 0.1; // decrease the x coordinate
+          examplePlane.setAttribute("position", position);
+        });
+
+        rotateXButton.addEventListener('click', () => {
+        let rotation = examplePlane.getAttribute("rotation");
+        rotation.x += 10; // Cambia este valor para ajustar la cantidad de rotación
+        examplePlane.setAttribute("rotation", rotation);
+        });
+
+        rotateYButton.addEventListener('click', () => {
+        let rotation = examplePlane.getAttribute("rotation");
+        rotation.y += 10; // Cambia este valor para ajustar la cantidad de rotación
+        examplePlane.setAttribute("rotation", rotation);
+        });
+
+        pauseSphere.addEventListener('click', () => { // event for pause sphere
+          isPaused = !isPaused; // change the isPaused variable to the opposite
+          pauseOrResumeAnimation(); // call the pauseOrResumeAnimation function
+          if (isPaused) {
+            pauseColor = "red"; // change the pause color to red
+          }
+          else {
+            pauseColor = "green"; // change the pause color to green
+          }
+          pauseSphere.setAttribute("color", pauseColor); // update the color of the pause sphere
+        });
+        function pauseOrResumeAnimation() {
+          let animationMixer = examplePlane.components["animation-mixer"];
+          if (isPaused) {
+            animationMixer.pause(); // pause the animation
+          }
+          else {
+            animationMixer.play(); // resume the animation
+          }
+        }
+        examplePlane.addEventListener('click', () => {
+          isPaused = !isPaused; // change the isPaused variable to the opposite
+          pauseOrResumeAnimation(); // call the pauseOrResumeAnimation function
+          if (isPaused) {
+            pauseColor = "red"; // change the pause color to red
+          }
+          else {
+            pauseColor = "green"; // change the pause color to green
+          }
+          pauseSphere.setAttribute("color", pauseColor); // update the color of the pause sphere
+        });
+        rightTriangle.addEventListener('click', () => { // event for right triangle
+          let position = examplePlane.getAttribute("position");
+          position.x += 0.1; // increase the x coordinate
+          examplePlane.setAttribute("position", position);
+        });
+        leftTriangle.addEventListener('click', () => { // event for left triangle
+          let position = examplePlane.getAttribute("position");
+          position.x -= 0.1; // decrease the x coordinate
+          examplePlane.setAttribute("position", position);
+        });
+        jumpTriangle.addEventListener('click', () => { // event for jump triangle
+          let position = examplePlane.getAttribute("position");
+          position.y += 0.1; // increase the y coordinate
+          examplePlane.setAttribute("position", position);
+        });
+        dropTriangle.addEventListener('click', () => { // event for drop triangle
+          let position = examplePlane.getAttribute("position");
+          position.y -= 0.1; // decrease the y coordinate
+          examplePlane.setAttribute("position", position);
+        });
+        examplePlane.addEventListener('model-loaded', () => { // new event listener for model-loaded
+          let animationMixer = examplePlane.components["animation-mixer"];
+          animationMixer.pause(); // pause the animation
+        });
+        sceneEl.addEventListener("arReady", (event) => {
+          // console.log("MindAR is ready")
+        });
+        sceneEl.addEventListener("arError", (event) => {
+          // console.log("MindAR failed to start")
+        });
+      });
+    </script>
+  </head>
+  <body>
+    <div style="position: absolute; z-index: 1000">
+      <button id="example-start-button" data-action="start">Start</button>
+      <button id="example-jump-button" data-action="jump">Jump</button> <!-- new jump button -->
+      <button id="example-drop-button" data-action="drop">Drop</button> <!-- new drop button -->
+      <button id="example-right-button" data-action="right">Right</button> <!-- new right button -->
+      <button id="example-left-button" data-action="left">Left</button> <!-- new left button -->
+      <button id="example-rotateX-button" data-action="rotateX">Rotate X</button>
+      <button id="example-rotateY-button" data-action="rotateY">Rotate Y</button>
+      
+    </div>
+    <a-scene mindar-image="imageTargetSrc: https://egometaar.github.io/assets/targets/f000e.mind; autoStart: false;" color-space="sRGB" renderer="colorManagement: true, physicallyCorrectLights" vr-mode-ui="enabled: false" device-orientation-permission-ui="enabled: false">
+      <a-asset-item id="raccoonModel" src="https://egometaar.github.io/assets/models/musicband-raccoon/f003e/f003e.gltf"></a-asset-item>
+      <a-camera position="0 0 0" look-controls="enabled: false" cursor="fuse: false; rayOrigin: mouse;" raycaster="near: 10; far: 10000; objects: .clickable"></a-camera>
+      <a-entity mindar-image-target="targetIndex: 0">
+        <a-gltf-model id="example-plane" class="clickable" rotation="0 0 0 " position="0 -0.25 0" scale="0.25 0.25 0.25" src="#raccoonModel" animation-mixer>
+        </a-gltf-model>
+        <a-sphere id="example-pause-sphere" class="clickable" radius="0.1" color="green" follow="target: #example-plane; distance: 0.8; angle: 0" position="0 0 0.1"> <!-- new pause sphere -->
+        </a-sphere>
+        <a-triangle id="example-right-triangle" class="clickable" color="blue" follow="target: #example-plane; distance: 0.8; angle: 90" position="0.2 0 0.1" scale="0.05 0.05 0.05" rotation="0 0 90"></a-triangle> <!-- new right triangle -->
+        <a-triangle id="example-left-triangle" class="clickable" color="orange" follow="target: #example-plane; distance: 0.8; angle: -90" position="-0.2 0 0.1" scale="0.05 0.05 0.05" rotation="0 0 0"></a-triangle> <!-- new left triangle -->
+        <a-triangle id="example-jump-triangle" class="clickable" color="yellow" follow="target: #example-plane; distance: 0.8; angle: 180" position="0 0.2 0.1" scale="0.05 0.05 0.05" rotation="0 0 180"></a-triangle> <!-- new jump triangle -->
+        <a-triangle id="example-drop-triangle" class="clickable" color="purple" follow="target: #example-plane; distance: 0.8; angle: 0" position="0 -0.2 0.1" scale="0.05 0.05 0.05" rotation="0 0 0"></a-triangle> <!-- new drop triangle -->
+      </a-entity>
+    </a-scene>
+  </body>
+</html>
