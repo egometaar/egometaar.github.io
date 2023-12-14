@@ -1,0 +1,258 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css">
+    <script src="https://aframe.io/releases/1.4.2/aframe.min.js"></script>
+    <script src="animation-mixer.js"></script>
+    <script src="https://cdn.jsdelivr.net/gh/donmccurdy/aframe-extras/dist/aframe-extras.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/mind-ar/dist/mindar-image-aframe.prod.js"></script>
+    <script>
+      document.addEventListener("DOMContentLoaded", function() {
+        const sceneEl = document.querySelector('a-scene');
+        let arSystem;
+        let isPaused = true; // define isPaused
+        sceneEl.addEventListener('loaded', function () {
+          arSystem = sceneEl.systems["mindar-image-system"];
+        });
+        const examplePlane0 = document.querySelector('#example-plane-0');
+        const examplePlane1 = document.querySelector('#example-plane-1');
+        const examplePlane2 = document.querySelector('#example-plane-2');
+        const examplePlane3 = document.querySelector('#example-plane-3');
+        const examplePlane4 = document.querySelector('#example-plane-4');
+        const startButton = document.querySelector("#example-start-button");
+        const jumpButton = document.querySelector("#example-jump-button"); // new jump button
+        const dropButton = document.querySelector("#example-drop-button"); // new drop button
+        const rightButton = document.querySelector("#example-right-button"); // new right button
+        const leftButton = document.querySelector("#example-left-button"); // new left button
+        const pauseSphere = document.querySelector("#example-pause-sphere"); // new pause sphere
+        const rightTriangle = document.querySelector("#example-right-triangle"); // new right triangle
+        const leftTriangle = document.querySelector("#example-left-triangle"); // new left triangle
+        const jumpTriangle = document.querySelector("#example-jump-triangle"); // new jump triangle
+        const dropTriangle = document.querySelector("#example-drop-triangle"); // new drop triangle
+        const rotateXButton = document.querySelector("#example-rotateX-button");
+        const rotateYButton = document.querySelector("#example-rotateY-button");
+        const scaleUpButton = document.querySelector("#example-scaleUp-button");
+        const scaleDownButton = document.querySelector("#example-scaleDown-button");
+        let pauseColor = "green"; // new pause color
+
+        startButton.addEventListener('click', () => {
+          console.log("start");
+          arSystem.start(); // start AR 
+        });
+        jumpButton.addEventListener('click', () => { // event for jump button
+          let position = examplePlane0.getAttribute("position");
+          position.y += 0.1;
+          examplePlane0.setAttribute("position", position);
+        });
+        dropButton.addEventListener('click', () => { // event for drop button
+          let position = examplePlane0.getAttribute("position");
+          position.y -= 0.1;
+          examplePlane0.setAttribute("position", position);
+        });
+        rightButton.addEventListener('click', () => { // event for right button
+          let position = examplePlane0.getAttribute("position");
+          position.x += 0.1;
+          examplePlane0.setAttribute("position", position);
+        });
+        leftButton.addEventListener('click', () => { // event for left button
+          let position = examplePlane0.getAttribute("position");
+          position.x -= 0.1; // decrease the x coordinate
+          examplePlane0.setAttribute("position", position);
+        });
+        rotateXButton.addEventListener('click', () => {
+        let rotation = examplePlane0.getAttribute("rotation");
+        rotation.x += 10; // Cambia este valor para ajustar la cantidad de rotación
+        examplePlane0.setAttribute("rotation", rotation);
+        });
+        rotateYButton.addEventListener('click', () => {
+        let rotation = examplePlane0.getAttribute("rotation");
+        rotation.y += 10; // Cambia este valor para ajustar la cantidad de rotación
+        examplePlane0.setAttribute("rotation", rotation);
+        });
+        scaleUpButton.addEventListener('click', () => {
+        let scale = examplePlane0.getAttribute("scale");
+        scale.x += 0.1;
+        scale.y += 0.1;
+        scale.z += 0.1;
+        examplePlane0.setAttribute("scale", scale);
+        });
+        scaleDownButton.addEventListener('click', () => {
+        let scale = examplePlane0.getAttribute("scale");
+        scale.x -= 0.1;
+        scale.y -= 0.1;
+        scale.z -= 0.1;
+        examplePlane0.setAttribute("scale", scale);
+        });
+        pauseSphere.addEventListener('click', () => { // event for pause sphere
+          isPaused = !isPaused; // change the isPaused variable to the opposite
+          pauseOrResumeAnimation('#example-plane-0'); // call the pauseOrResumeAnimation function
+          if (isPaused) {
+            pauseColor = "red"; // change the pause color to red
+          }
+          else {
+            pauseColor = "green"; // change the pause color to green
+          }
+          pauseSphere.setAttribute("color", pauseColor); // update the color of the pause sphere
+        });
+
+        const pauseBox = document.querySelector("#example-pause-box"); // new pause box
+let boxColor = "blue"; // new box color
+ 
+pauseBox.addEventListener('click', () => { // event for pause box
+  isPaused = !isPaused; // change the isPaused variable to the opposite
+  pauseOrResumeAnimation('#example-plane-1'); // call the pauseOrResumeAnimation function
+  if (isPaused) {
+    boxColor = "red"; // change the box color to red
+  }
+  else {
+    boxColor = "blue"; // change the box color to blue
+  }
+  pauseBox.setAttribute("color", boxColor); // update the color of the pause box
+});
+
+          
+        function pauseOrResumeAnimation(modelId) {
+  let model = document.querySelector(modelId);
+  let animationMixer = model.components["animation-mixer"];
+  if (isPaused) {
+    animationMixer.pause(); // pause the animation
+  }
+  else {
+    animationMixer.play(); // resume the animation
+  }
+}
+
+        examplePlane0.addEventListener('click', () => {
+          isPaused = !isPaused; // change the isPaused variable to the opposite
+          pauseOrResumeAnimation('#example-plane-0'); // call the pauseOrResumeAnimation function
+          if (isPaused) {
+            pauseColor = "red"; // change the pause color to red
+          }
+          else {
+            pauseColor = "green"; // change the pause color to green
+          }
+
+                 pauseSphere.setAttribute("color", pauseColor); // update the color of the pause sphere
+        });
+
+
+        examplePlane1.addEventListener('click', () => {
+  isPaused = !isPaused; // change the isPaused variable to the opposite
+  pauseOrResumeAnimation('#example-plane-1'); // call the pauseOrResumeAnimation function
+  if (isPaused) {
+    boxColor = "red"; // change the box color to red
+  }
+  else {
+    boxColor = "blue"; // change the box color to blue
+  }
+  pauseBox.setAttribute("color", boxColor); // update the color of the pause box
+});
+
+        rightTriangle.addEventListener('click', () => { // event for right triangle
+          let position = examplePlane0.getAttribute("position");
+          position.x += 0.1; // increase the x coordinate
+          examplePlane0.setAttribute("position", position);
+        });
+        leftTriangle.addEventListener('click', () => { // event for left triangle
+          let position = examplePlane0.getAttribute("position");
+          position.x -= 0.1; // decrease the x coordinate
+          examplePlane0.setAttribute("position", position);
+        });
+        jumpTriangle.addEventListener('click', () => { // event for jump triangle
+          let position = examplePlane0.getAttribute("position");
+          position.y += 0.1; // increase the y coordinate
+          examplePlane0.setAttribute("position", position);
+        });
+        dropTriangle.addEventListener('click', () => { // event for drop triangle
+          let position = examplePlane0.getAttribute("position");
+          position.y -= 0.1; // decrease the y coordinate
+          examplePlane0.setAttribute("position", position);
+        });
+        examplePlane0.addEventListener('model-loaded', () => { // new event listener for model-loaded
+          let animationMixer = examplePlane0.components["animation-mixer"];
+          animationMixer.pause(); // pause the animation
+        });
+        examplePlane1.addEventListener('model-loaded', () => { // new event listener for model-loaded
+          let animationMixer = examplePlane1.components["animation-mixer"];
+          animationMixer.pause(); // pause the animation
+        });
+        examplePlane2.addEventListener('model-loaded', () => { // new event listener for model-loaded
+          let animationMixer = examplePlane2.components["animation-mixer"];
+          animationMixer.pause(); // pause the animation
+        });
+        examplePlane3.addEventListener('model-loaded', () => { // new event listener for model-loaded
+          let animationMixer = examplePlane3.components["animation-mixer"];
+          animationMixer.pause(); // pause the animation
+        });
+        examplePlane4.addEventListener('model-loaded', () => { // new event listener for model-loaded
+          let animationMixer = examplePlane4.components["animation-mixer"];
+          animationMixer.pause(); // pause the animation
+        });
+        sceneEl.addEventListener("arReady", (event) => {
+          // console.log("MindAR is ready")
+        });
+        sceneEl.addEventListener("arError", (event) => {
+          // console.log("MindAR failed to start")
+        });
+      });
+    </script>
+  </head>
+  <body>
+    <div style="position: absolute; z-index: 1000">
+      <button id="example-start-button" data-action="start" style="background: url('yo_EgO.png'); width: 50px; height: 50px;"></button>
+      <button id="example-jump-button" data-action="jump">Jump</button> <!-- new jump button -->
+      <button id="example-drop-button" data-action="drop">Drop</button> <!-- new drop button -->
+      <button id="example-right-button" data-action="right">Right</button> <!-- new right button -->
+      <button id="example-left-button" data-action="left">Left</button> <!-- new left button -->
+      <button id="example-rotateX-button" data-action="rotateX">Rotate X</button>
+      <button id="example-rotateY-button" data-action="rotateY">Rotate Y</button>
+      <button id="example-scaleUp-button" data-action="scaleUp">Scale Up</button>
+      <button id="example-scaleDown-button" data-action="scaleDown">Scale Down</button>
+    </div>
+    <a-scene mindar-image="imageTargetSrc: http://127.0.0.1:5500/assets/targets/targets.mind; maxTrack: 5; autoStart: false;" color-space="sRGB" renderer="colorManagement: true, physicallyCorrectLights" vr-mode-ui="enabled: false" device-orientation-permission-ui="enabled: false">
+      <a-asset-item id="ego" src="http://127.0.0.1:5500/assets/models/musicband-raccoon/f000e_f000h/f000e_f000h.gltf"></a-asset-item>
+      <a-asset-item id="santa" src="http://127.0.0.1:5500/assets/models/musicband-raccoon/f001e/f001e.gltf"></a-asset-item>
+      <!-- <a-asset-item id="ginger" src="http://127.0.0.1:5500/assets/models/musicband-raccoon/f002e/f002e.gltf"></a-asset-item>
+      <a-asset-item id="elf" src="http://127.0.0.1:5500/assets/models/musicband-raccoon/f003e/f003e.gltf"></a-asset-item>
+      <a-asset-item id="poster" src="http://127.0.0.1:5500/assets/models/musicband-raccoon/f004e/poster.gltf"></a-asset-item> -->
+      <a-camera position="0 0 0" look-controls="enabled: false" cursor="fuse: false; rayOrigin: mouse;" raycaster="near: 10; far: 10000; objects: .clickable"></a-camera>
+      <a-entity mindar-image-target="targetIndex: 0">
+        <a-gltf-model id="example-plane-0" class="clickable" rotation="0 0 0 " position="0 -0.25 0" scale="0.25 0.25 0.25" src="#ego" animation-mixer>
+        </a-gltf-model>
+        <a-sphere id="example-pause-sphere" class="clickable" radius="0.1" color="green" follow="target: #example-plane-0; distance: 0.8; angle: 0" position="0 0 0.1"> <!-- new pause sphere -->
+        </a-sphere>
+        <a-triangle id="example-right-triangle" class="clickable" color="blue" follow="target: #example-plane-0; distance: 0.8; angle: 90" position="0.2 0 0.1" scale="0.05 0.05 0.05" rotation="0 0 90"></a-triangle> <!-- new right triangle -->
+        <a-triangle id="example-left-triangle" class="clickable" color="orange" follow="target: #example-plane-0; distance: 0.8; angle: -90" position="-0.2 0 0.1" scale="0.05 0.05 0.05" rotation="0 0 0"></a-triangle> <!-- new left triangle -->
+        <a-triangle id="example-jump-triangle" class="clickable" color="yellow" follow="target: #example-plane-0; distance: 0.8; angle: 180" position="0 0.2 0.1" scale="0.05 0.05 0.05" rotation="0 0 180"></a-triangle> <!-- new jump triangle -->
+        <a-triangle id="example-drop-triangle" class="clickable" color="purple" follow="target: #example-plane-0; distance: 0.8; angle: 0" position="0 -0.2 0.1" scale="0.05 0.05 0.05" rotation="0 0 0"></a-triangle> <!-- new drop triangle -->
+      </a-entity>
+    
+
+      <a-entity mindar-image-target="targetIndex: 1">
+        <a-gltf-model id="example-plane-1" class="clickable" rotation="0 0 0 " position="0 -0.25 0" scale="0.25 0.25 0.25" src="#santa" animation-mixer>
+        </a-gltf-model>
+        <a-box id="example-pause-box" class="clickable" depth="0.1" height="0.1" width="0.1" color="blue" follow="target: #example-plane-1; distance: 0.8; angle: 0" position="0 0 0.1">
+        </a-box>
+
+        
+      </a-entity>
+
+
+
+
+      <a-entity mindar-image-target="targetIndex: 2">
+        <a-gltf-model id="example-plane-2" class="clickable" rotation="0 0 0 " position="0 -0.25 0" scale="0.25 0.25 0.25" src="#ginger" animation-mixer>
+        </a-gltf-model>
+      </a-entity>
+      <a-entity mindar-image-target="targetIndex: 3">
+        <a-gltf-model id="example-plane-3" class="clickable" rotation="0 0 0 " position="0 -0.25 0" scale="0.25 0.25 0.25" src="#elf" animation-mixer>
+        </a-gltf-model>
+      </a-entity>
+      <a-entity mindar-image-target="targetIndex: 4">
+        <a-gltf-model id="example-plane-4" class="clickable" rotation="0 0 0 " position="0 -0.25 0" scale="0.25 0.25 0.25" src="#poster" animation-mixer>
+        </a-gltf-model>
+      </a-entity>
+    </a-scene>
+  </body>
+</html>
