@@ -1,0 +1,391 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css">
+  <script src="https://aframe.io/releases/1.4.2/aframe.min.js"></script>
+  <script src="animation-mixer.js"></script>
+  <script src="https://cdn.jsdelivr.net/gh/donmccurdy/aframe-extras/dist/aframe-extras.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/mind-ar/dist/mindar-image-aframe.prod.js"></script>
+  <script>
+    document.addEventListener("DOMContentLoaded", function () {
+      const sceneEl = document.querySelector('a-scene');
+      let arSystem;
+      let isPaused = true; // define isPaused
+      sceneEl.addEventListener('loaded', function () {
+        arSystem = sceneEl.systems["mindar-image-system"];
+      });
+      const examplePlane0 = document.querySelector('#example-plane-0');
+      const examplePlane1 = document.querySelector('#example-plane-1');
+      const examplePlane2 = document.querySelector('#example-plane-2');
+      const examplePlane3 = document.querySelector('#example-plane-3');
+    //   const examplePlane4 = document.querySelector('#example-plane-4');
+      const startButton = document.querySelector("#example-start-button");
+      const jumpButton = document.querySelector("#example-jump-button"); // new jump button
+      const dropButton = document.querySelector("#example-drop-button"); // new drop button
+      const rightButton = document.querySelector("#example-right-button"); // new right button
+      const leftButton = document.querySelector("#example-left-button"); // new left button
+      const pauseSphere = document.querySelector("#example-pause-sphere"); // new pause sphere
+    
+      const rotateXButton = document.querySelector("#example-rotateX-button");
+      const rotateYButton = document.querySelector("#example-rotateY-button");
+      const scaleUpButton = document.querySelector("#example-scaleUp-button");
+      const scaleDownButton = document.querySelector("#example-scaleDown-button");
+      let pauseColor = "green"; // new pause color
+      startButton.addEventListener('click', () => {
+        console.log("start");
+        arSystem.start(); // start AR 
+      });
+      jumpButton.addEventListener('click', () => { // event for jump button
+        let position = examplePlane0.getAttribute("position");
+        position.y += 0.1;
+        examplePlane0.setAttribute("position", position);
+      });
+      dropButton.addEventListener('click', () => { // event for drop button
+        let position = examplePlane0.getAttribute("position");
+        position.y -= 0.1;
+        examplePlane0.setAttribute("position", position);
+      });
+      rightButton.addEventListener('click', () => { // event for right button
+        let position = examplePlane0.getAttribute("position");
+        position.x += 0.1;
+        examplePlane0.setAttribute("position", position);
+      });
+      leftButton.addEventListener('click', () => { // event for left button
+        let position = examplePlane0.getAttribute("position");
+        position.x -= 0.1; // decrease the x coordinate
+        examplePlane0.setAttribute("position", position);
+      });
+      rotateXButton.addEventListener('click', () => {
+        let rotation = examplePlane0.getAttribute("rotation");
+        rotation.x += 10; // Cambia este valor para ajustar la cantidad de rotación
+        examplePlane0.setAttribute("rotation", rotation);
+      });
+      rotateYButton.addEventListener('click', () => {
+        let rotation = examplePlane0.getAttribute("rotation");
+        rotation.y += 10; // Cambia este valor para ajustar la cantidad de rotación
+        examplePlane0.setAttribute("rotation", rotation);
+      });
+      scaleUpButton.addEventListener('click', () => {
+        let scale = examplePlane0.getAttribute("scale");
+        scale.x += 0.1;
+        scale.y += 0.1;
+        scale.z += 0.1;
+        examplePlane0.setAttribute("scale", scale);
+      });
+      scaleDownButton.addEventListener('click', () => {
+        let scale = examplePlane0.getAttribute("scale");
+        scale.x -= 0.1;
+        scale.y -= 0.1;
+        scale.z -= 0.1;
+        examplePlane0.setAttribute("scale", scale);
+      });
+      pauseSphere.addEventListener('click', () => { // event for pause sphere
+        isPaused = !isPaused; // change the isPaused variable to the opposite
+        pauseOrResumeAnimation('#example-plane-0'); // call the pauseOrResumeAnimation function
+        if (isPaused) {
+          pauseColor = "red"; // change the pause color to red
+        }
+        else {
+          pauseColor = "green"; // change the pause color to green
+        }
+        pauseSphere.setAttribute("color", pauseColor); // update the color of the pause sphere
+      });
+
+      const pauseBox = document.querySelector("#example-pause-box"); // new pause box
+      let boxColor = "blue"; // new box color
+
+      pauseBox.addEventListener('click', () => { // event for pause box
+        isPaused = !isPaused; // change the isPaused variable to the opposite
+        pauseOrResumeAnimation('#example-plane-1'); // call the pauseOrResumeAnimation function
+        if (isPaused) {
+          boxColor = "red"; // change the box color to red
+        }
+        else {
+          boxColor = "blue"; // change the box color to blue
+        }
+        pauseBox.setAttribute("color", boxColor); // update the color of the pause box
+      });
+
+
+      const pauseCylinder = document.querySelector("#example-pause-cylinder"); // new pause cylinder
+      let cylinderColor = "blue"; // new cylinder color
+
+      pauseCylinder.addEventListener('click', () => { // event for pause cylinder
+        isPaused = !isPaused; // change the isPaused variable to the opposite
+        pauseOrResumeAnimation('#example-plane-3'); // call the pauseOrResumeAnimation function
+        if (isPaused) {
+          cylinderColor = "red"; // change the cylinder color to red
+        }
+        else {
+          cylinderColor = "blue"; // change the cylinder color to blue
+        }
+        pauseCylinder.setAttribute("color", cylinderColor); // update the color of the pause cylinder
+      });
+
+
+      const pauseCone = document.querySelector("#example-pause-cone"); // new pause cone
+      let coneColor = "blue"; // new cone color
+
+      pauseCone.addEventListener('click', () => { // event for pause cone
+        isPaused = !isPaused; // change the isPaused variable to the opposite
+        pauseOrResumeAnimation('#example-plane-2'); // call the pauseOrResumeAnimation function
+        if (isPaused) {
+          coneColor = "red"; // change the cone color to red
+        }
+        else {
+          coneColor = "blue"; // change the cone color to blue
+        }
+        pauseCone.setAttribute("color", coneColor); // update the color of the pause cone
+      });
+
+      /* const pausePlane = document.querySelector("#example-pause-plane"); // new pause plane
+      let planeColor = "blue"; // new plane color
+ */
+      /* pausePlane.addEventListener('click', () => { // event for pause plane
+        isPaused = !isPaused; // change the isPaused variable to the opposite
+        pauseOrResumeAnimation('#example-plane-4'); // call the pauseOrResumeAnimation function
+        if (isPaused) {
+          planeColor = "red"; // change the plane color to red
+        }
+        else {
+          planeColor = "blue"; // change the plane color to blue
+        }
+        pausePlane.setAttribute("color", planeColor); // update the color of the pause plane
+      }); */
+
+
+
+      function pauseOrResumeAnimation(modelId) {
+        let model = document.querySelector(modelId);
+        let animationMixer = model.components["animation-mixer"];
+        if (isPaused) {
+          animationMixer.pause(); // pause the animation
+        }
+        else {
+          animationMixer.play(); // resume the animation
+        }
+      }
+
+      examplePlane0.addEventListener('click', () => {
+        isPaused = !isPaused; // change the isPaused variable to the opposite
+        pauseOrResumeAnimation('#example-plane-0'); // call the pauseOrResumeAnimation function
+        if (isPaused) {
+          pauseColor = "red"; // change the pause color to red
+        }
+        else {
+          pauseColor = "green"; // change the pause color to green
+        }
+
+        pauseSphere.setAttribute("color", pauseColor); // update the color of the pause sphere
+      });
+
+      examplePlane1.addEventListener('click', () => {
+        isPaused = !isPaused; // change the isPaused variable to the opposite
+        pauseOrResumeAnimation('#example-plane-1'); // call the pauseOrResumeAnimation function
+        if (isPaused) {
+          boxColor = "red"; // change the box color to red
+        }
+        else {
+          boxColor = "blue"; // change the box color to blue
+        }
+        pauseBox.setAttribute("color", boxColor); // update the color of the pause box
+      });
+
+      
+      examplePlane0.addEventListener('model-loaded', () => { // new event listener for model-loaded
+        let animationMixer = examplePlane0.components["animation-mixer"];
+        animationMixer.pause(); // pause the animation
+      });
+      examplePlane1.addEventListener('model-loaded', () => { // new event listener for model-loaded
+        let animationMixer = examplePlane1.components["animation-mixer"];
+        animationMixer.pause(); // pause the animation
+      });
+      examplePlane2.addEventListener('model-loaded', () => { // new event listener for model-loaded
+        let animationMixer = examplePlane2.components["animation-mixer"];
+        animationMixer.pause(); // pause the animation
+      });
+      examplePlane3.addEventListener('model-loaded', () => { // new event listener for model-loaded
+        let animationMixer = examplePlane3.components["animation-mixer"];
+        animationMixer.pause(); // pause the animation
+      });
+      /* examplePlane4.addEventListener('model-loaded', () => { // new event listener for model-loaded
+        let animationMixer = examplePlane4.components["animation-mixer"];
+        animationMixer.pause(); // pause the animation
+      }); */
+      sceneEl.addEventListener("arReady", (event) => {
+        // console.log("MindAR is ready")
+      });
+      sceneEl.addEventListener("arError", (event) => {
+        // console.log("MindAR failed to start")
+      });
+
+      const idButton = document.querySelector("#id-button");
+
+// Crea un objeto que mapee los id de los elementos a los íconos que quieres mostrar
+const idToIcon = {
+//   "example-pause-sphere": '<i class="fas fa-dice-one"></i>',
+"example-pause-sphere": '<i class="fas fa-dice-one" style="font-size: 24px;"></i>',
+  "example-pause-box": '<i class="fas fa-dice-two" style="font-size: 24px;"></i>',
+  "example-pause-cone": '<i class="fas fa-dice-three" style="font-size: 24px;"></i>',
+  "example-pause-cylinder": '<i class="fas fa-dice-four" style="font-size: 24px;"></i>',
+//   "example-pause-plane": '<i class="fas fa-dice-five" style="font-size: 24px;"></i>',
+  // Agrega más mapeos aquí para los otros elementos
+};
+
+const sphere = document.querySelector("#example-pause-sphere");
+sphere.addEventListener('click', () => {
+  idButton.innerHTML = idToIcon[sphere.id]; // Usa el mapeo para obtener el ícono
+});
+
+const box = document.querySelector("#example-pause-box");
+box.addEventListener('click', () => {
+  idButton.innerHTML = idToIcon[box.id]; // Usa el mapeo para obtener el ícono
+});
+
+const cone = document.querySelector("#example-pause-cone");
+cone.addEventListener('click', () => {
+  idButton.innerHTML = idToIcon[cone.id]; // Usa el mapeo para obtener el ícono
+});
+
+const cylinder = document.querySelector("#example-pause-cylinder");
+cylinder.addEventListener('click', () => { // Debería ser 'cylinder' en lugar de 'cone'
+  idButton.innerHTML = idToIcon[cylinder.id]; // Usa el mapeo para obtener el ícono
+});
+
+/* const plane = document.querySelector("#example-pause-plane");
+plane.addEventListener('click', () => { // Debería ser 'plane' en lugar de 'cone'
+  idButton.innerHTML = idToIcon[plane.id]; // Usa el mapeo para obtener el ícono
+}); */
+
+// Haz lo mismo para los elementos <a-cone>, <a-cylinder>, y <a-plane>
+
+
+
+      
+    });
+  </script>
+
+
+<style>
+    #start-button-container {
+      position: absolute;
+      z-index: 1000;
+    }
+  
+    #menu {
+      position: absolute;
+      z-index: 1000;
+      left: 70px;
+      background-color: #f8f9fa;
+      border: 1px solid #dee2e6;
+      border-radius: 5px;
+      padding: 10px;
+      width: auto;
+      display: flex;
+      flex-direction: row;
+      flex-wrap: wrap; /* Permite que los botones se ajusten al tamaño de la pantalla */
+    }
+  
+    #menu button {
+      margin-right: 10px;
+      padding: 5px;
+      box-sizing: border-box;
+      flex: 1 1 auto; /* Hace que los botones sean flexibles */
+    }
+  </style>
+  
+
+</head>
+
+<body>
+  
+
+  <!-- <div id="start-button-container">
+    <button id="example-start-button" data-action="start"
+      style="background: url('yo_EgO.png'); width: 50px; height: 50px;"></button>
+  </div>
+   -->
+
+   <div id="start-button-container">
+    <button id="example-start-button" data-action="start">
+      <i class="fas fa-vr-cardboard" style="font-size: 40px; color: red;"></i> <!-- Ajusta el color aquí -->
+    </button>
+  </div>
+
+  <div id="menu">
+    <button id="id-button">
+        <i class="fas fa-user-astronaut" style="font-size: 20px;"></i> <!-- Ícono de Font Awesome -->
+      </button>
+     <button id="example-jump-button" data-action="jump"><i class="fas fa-arrow-up" style="font-size: 20px;"></i></button>
+    <button id="example-drop-button" data-action="drop"><i class="fas fa-arrow-down" style="font-size: 20px;"></i></button>
+    <button id="example-right-button" data-action="right"><i class="fas fa-arrow-right" style="font-size: 20px;"></i></button>
+    <button id="example-left-button" data-action="left"><i class="fas fa-arrow-left" style="font-size: 20px;"></i></button>
+    <button id="example-rotateX-button" data-action="rotateX"><i class="fas fa-arrows-alt-v" style="font-size: 20px;"></i></button>
+    <button id="example-rotateY-button" data-action="rotateY"><i class="fas fa-retweet" style="font-size: 20px;"></i></button>
+    <button id="example-scaleUp-button" data-action="scaleUp"><i class="fas fa-search-plus" style="font-size: 20px;"></i></button>
+    <button id="example-scaleDown-button" data-action="scaleDown"><i class="fas fa-search-minus" style="font-size: 20px;"></i></button>
+
+  </div> 
+  
+  <a-scene
+    mindar-image="imageTargetSrc: https://egometaar.github.io/assets/targets/targets.mind; maxTrack: 5; autoStart: false;"
+    color-space="sRGB" renderer="colorManagement: true, physicallyCorrectLights" vr-mode-ui="enabled: false"
+    device-orientation-permission-ui="enabled: false">
+    <a-asset-item id="ego"
+      src="https://egometaar.github.io/assets/models/musicband-raccoon/f000e_f000h/f000e_f000h.gltf"></a-asset-item>
+    <a-asset-item id="santa"
+      src="https://egometaar.github.io/assets/models/musicband-raccoon/f001e/f001e.gltf"></a-asset-item>
+    <a-asset-item id="ginger"
+      src="https://egometaar.github.io/assets/models/musicband-raccoon/f002e/f002e.gltf"></a-asset-item>
+    <a-asset-item id="elf" src="https://egometaar.github.io/assets/models/musicband-raccoon/f003e/f003e.gltf"></a-asset-item>
+    <!-- <a-asset-item id="poster"
+      src="https://egometaar.github.io/assets/models/musicband-raccoon/f004e/poster.gltf"></a-asset-item> -->
+    <a-camera position="0 0 0" look-controls="enabled: false" cursor="fuse: false; rayOrigin: mouse;"
+      raycaster="near: 10; far: 10000; objects: .clickable"></a-camera>
+    <a-entity mindar-image-target="targetIndex: 0">
+      <a-gltf-model id="example-plane-0" class="clickable" rotation="0 0 0 " position="0 -0.25 0" scale="0.25 0.25 0.25"
+        src="#ego" animation-mixer>
+      </a-gltf-model>
+      
+      <a-sphere id="example-pause-sphere" class="clickable" radius="0.15" color="green"  opacity="0.5"
+        follow="target: #example-plane-0; distance: 0.8; angle: 0" position="0 0 0.1"> <!-- new pause sphere -->
+      </a-sphere>
+     
+    </a-entity>
+    <a-entity mindar-image-target="targetIndex: 1">
+      <a-gltf-model id="example-plane-1" class="clickable" rotation="0 0 0 " position="0 -0.25 0" scale="0.25 0.25 0.25"
+        src="#santa" animation-mixer>
+      </a-gltf-model>
+      <a-box id="example-pause-box" class="clickable" depth="0.5" height="0.5" width="0.5" color="blue" opacity="0.5"
+        follow="target: #example-plane-1; distance: 0.8; angle: 0" position="0 0 0.1">
+      </a-box>
+    </a-entity>
+    <a-entity mindar-image-target="targetIndex: 2">
+      <a-gltf-model id="example-plane-2" class="clickable" rotation="0 0 0 " position="0 -0.25 0" scale="0.25 0.25 0.25"
+        src="#ginger" animation-mixer>
+      </a-gltf-model>
+      <a-cone id="example-pause-cone" class="clickable" radius-bottom="0.50" height="0.5" color="blue" opacity="0.5"
+        follow="target: #example-plane-2; distance: 0.8; angle: 0" position="0 0 0.1">
+
+    </a-entity>
+    <a-entity mindar-image-target="targetIndex: 3">
+      <a-gltf-model id="example-plane-3" class="clickable" rotation="0 0 0 " position="0 -0.25 0" scale="0.25 0.25 0.25"
+        src="#elf" animation-mixer>
+      </a-gltf-model>
+      <a-cylinder id="example-pause-cylinder" class="clickable" radius="0.50" height="0.5" color="blue" opacity="0.5"
+        follow="target: #example-plane-3; distance: 0.8; angle: 0" position="0 0 0.1"></a-cylinder>
+    </a-entity>
+    <!-- <a-entity mindar-image-target="targetIndex: 4">
+      <a-gltf-model id="example-plane-4" class="clickable" rotation="0 0 0 " position="0 -0.25 0" scale="0.25 0.25 0.25"
+        src="#poster" animation-mixer>
+      </a-gltf-model> -->
+      <!-- <a-plane id="example-pause-plane" class="clickable" height="0.5" width="0.5" color="blue" opacity="0.5"
+        follow="target: #example-plane-4; distance: 0.8; angle: 0" position="0 0 0.1"> -->
+
+    </a-entity>
+  </a-scene>
+</body>
+
+</html>
