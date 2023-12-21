@@ -1,0 +1,407 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css">
+  <script src="https://aframe.io/releases/1.4.2/aframe.min.js"></script>
+  <!-- <script src="animation-mixer.js"></script> -->
+  <script src="https://cdn.jsdelivr.net/gh/donmccurdy/aframe-extras/dist/aframe-extras.min.js"></script>
+  <!-- <script src="https://cdn.jsdelivr.net/npm/mind-ar/dist/mindar-image-aframe.prod.js"></script> -->
+  <script src="https://cdn.jsdelivr.net/npm/mind-ar@1.2.2/dist/mindar-image-aframe.prod.js"></script>
+
+  <script>
+    document.addEventListener("DOMContentLoaded", function () {
+      const sceneEl = document.querySelector('a-scene');
+      let arSystem;
+      let isPaused = true; // define isPaused
+      let selectedModelId = 'example-plane-0'; // Inicialmente selecciona el modelo 'ego'
+      sceneEl.addEventListener('loaded', function () {
+        arSystem = sceneEl.systems["mindar-image-system"];
+      });
+      const examplePlane0 = document.querySelector('#example-plane-0');
+     
+      const startButton = document.querySelector("#example-start-button");
+      const jumpButton = document.querySelector("#example-jump-button"); // new jump button
+      const dropButton = document.querySelector("#example-drop-button"); // new drop button
+      const rightButton = document.querySelector("#example-right-button"); // new right button
+      const leftButton = document.querySelector("#example-left-button"); // new left button
+      const pauseSphere = document.querySelector("#example-pause-sphere"); // new pause sphere
+      const rotateXButton = document.querySelector("#example-rotateX-button");
+      const rotateYButton = document.querySelector("#example-rotateY-button");
+      const scaleUpButton = document.querySelector("#example-scaleUp-button");
+      const scaleDownButton = document.querySelector("#example-scaleDown-button");
+      let pauseColor = "green"; // new pause color
+      startButton.addEventListener('click', () => {
+        console.log("start");
+        arSystem.start(); // start AR 
+      });
+      jumpButton.addEventListener('click', () => { // event for jump button
+        let position = document.querySelector('#' + selectedModelId).getAttribute("position");
+        position.y += 0.1;
+        document.querySelector('#' + selectedModelId).setAttribute("position", position);
+
+        // Actualiza la posición de la figura geométrica asociada
+        let associatedFigure = getAssociatedFigure(selectedModelId);
+        let figurePosition = document.querySelector('#' + associatedFigure).getAttribute("position");
+        figurePosition.y += 0.1;
+        document.querySelector('#' + associatedFigure).setAttribute("position", figurePosition);
+
+      });
+
+      dropButton.addEventListener('click', () => { // event for drop button
+        let position = document.querySelector('#' + selectedModelId).getAttribute("position");
+        position.y -= 0.1;
+        document.querySelector('#' + selectedModelId).setAttribute("position", position);
+
+        // Actualiza la posición de la figura geométrica asociada
+        let associatedFigure = getAssociatedFigure(selectedModelId);
+        // let associatedFigure = getAssociatedFigure(selectedModelId);
+        let figurePosition = document.querySelector('#' + associatedFigure).getAttribute("position");
+        // let figurePosition = document.querySelector('#' + associatedFigure).getAttribute("position");
+        // figurePosition.y -= 0.1;
+
+        figurePosition.y -= 0.1;
+        document.querySelector('#' + associatedFigure).setAttribute("position", figurePosition);
+        // document.querySelector('#' + associatedFigure).setAttribute("position", figurePosition);
+
+      });
+
+
+      rightButton.addEventListener('click', () => { // event for right button
+        let position = document.querySelector('#' + selectedModelId).getAttribute("position");
+        position.x += 0.1;
+        document.querySelector('#' + selectedModelId).setAttribute("position", position);
+
+        // Actualiza la posición de la figura geométrica asociada
+        let associatedFigure = getAssociatedFigure(selectedModelId);
+        let figurePosition = document.querySelector('#' + associatedFigure).getAttribute("position");
+        figurePosition.x += 0.1;
+        document.querySelector('#' + associatedFigure).setAttribute("position", figurePosition);
+      });
+
+      leftButton.addEventListener('click', () => { // event for right button
+        let position = document.querySelector('#' + selectedModelId).getAttribute("position");
+        position.x -= 0.1;
+        document.querySelector('#' + selectedModelId).setAttribute("position", position);
+
+        // Actualiza la posición de la figura geométrica asociada
+        let associatedFigure = getAssociatedFigure(selectedModelId);
+        let figurePosition = document.querySelector('#' + associatedFigure).getAttribute("position");
+        figurePosition.x -= 0.1;
+        document.querySelector('#' + associatedFigure).setAttribute("position", figurePosition);
+      });
+
+      rotateXButton.addEventListener('click', () => {
+        let rotation = document.querySelector('#' + selectedModelId).getAttribute("rotation");
+        rotation.x += 10; // Cambia este valor para ajustar la cantidad de rotación
+        document.querySelector('#' + selectedModelId).setAttribute("rotation", rotation);
+
+        // Actualiza la rotación de la figura geométrica asociada
+        let associatedFigure = getAssociatedFigure(selectedModelId);
+        let figureRotation = document.querySelector('#' + associatedFigure).getAttribute("rotation");
+        figureRotation.x += 10; // Cambia este valor para ajustar la cantidad de rotación
+        document.querySelector('#' + associatedFigure).setAttribute("rotation", figureRotation);
+      });
+
+
+      rotateYButton.addEventListener('click', () => {
+        let rotation = document.querySelector('#' + selectedModelId).getAttribute("rotation");
+        rotation.y += 10; // Cambia este valor para ajustar la cantidad de rotación
+        document.querySelector('#' + selectedModelId).setAttribute("rotation", rotation);
+
+        // Actualiza la rotación de la figura geométrica asociada
+        let associatedFigure = getAssociatedFigure(selectedModelId);
+        let figureRotation = document.querySelector('#' + associatedFigure).getAttribute("rotation");
+        figureRotation.y += 10; // Cambia este valor para ajustar la cantidad de rotación
+        document.querySelector('#' + associatedFigure).setAttribute("rotation", figureRotation);
+      });
+
+      scaleUpButton.addEventListener('click', () => {
+        let scale = document.querySelector('#' + selectedModelId).getAttribute("scale");
+        scale.x += 0.1;
+        scale.y += 0.1;
+        scale.z += 0.1;
+        document.querySelector('#' + selectedModelId).setAttribute("scale", scale);
+
+        // Actualiza la escala de la figura geométrica asociada
+        let associatedFigure = getAssociatedFigure(selectedModelId);
+        let figureScale = document.querySelector('#' + associatedFigure).getAttribute("scale");
+        figureScale.x += 0.1;
+        figureScale.y += 0.1;
+        figureScale.z += 0.1;
+        document.querySelector('#' + associatedFigure).setAttribute("scale", figureScale);
+      });
+
+      scaleDownButton.addEventListener('click', () => {
+        let scale = document.querySelector('#' + selectedModelId).getAttribute("scale");
+        scale.x -= 0.1;
+        scale.y -= 0.1;
+        scale.z -= 0.1;
+        document.querySelector('#' + selectedModelId).setAttribute("scale", scale);
+
+
+        // Actualiza la escala de la figura geométrica asociada
+        let associatedFigure = getAssociatedFigure(selectedModelId);
+        let figureScale = document.querySelector('#' + associatedFigure).getAttribute("scale");
+        figureScale.x -= 0.1;
+        figureScale.y -= 0.1;
+        figureScale.z -= 0.1;
+        document.querySelector('#' + associatedFigure).setAttribute("scale", figureScale);
+      });
+
+
+      function getAssociatedFigure(modelId) {
+        // Devuelve el id de la figura geométrica asociada al modelo 3D
+        switch (modelId) {
+          case 'example-plane-0':
+            return 'example-pause-sphere';
+                 
+        
+        }
+      }
+
+      pauseSphere.addEventListener('click', () => { // event for pause sphere
+        selectedModelId = 'example-plane-0';
+        isPaused = !isPaused; // change the isPaused variable to the opposite
+        pauseOrResumeAnimation('#' + selectedModelId); // call the pauseOrResumeAnimation function
+        if (isPaused) {
+          pauseColor = "red"; // change the pause color to red
+        }
+        else {
+          pauseColor = "green"; // change the pause color to green
+        }
+        pauseSphere.setAttribute("color", pauseColor); // update the color of the pause sphere
+      });
+
+      function pauseOrResumeAnimation(modelId) {
+        let model = document.querySelector(modelId);
+        let animationMixer = model.components["animation-mixer"];
+        if (isPaused) {
+          animationMixer.pause(); // pause the animation
+        }
+        else {
+          animationMixer.play(); // resume the animation
+        }
+      }
+
+      examplePlane0.addEventListener('click', () => {
+        selectedModelId = 'example-plane-0';
+        isPaused = !isPaused; // change the isPaused variable to the opposite
+        pauseOrResumeAnimation('#example-plane-0'); // call the pauseOrResumeAnimation function
+        if (isPaused) {
+          pauseColor = "red"; // change the pause color to red
+        }
+        else {
+          pauseColor = "green"; // change the pause color to green
+        }
+
+        pauseSphere.setAttribute("color", pauseColor); // update the color of the pause sphere
+      });
+
+   
+
+      examplePlane0.addEventListener('model-loaded', () => { // new event listener for model-loaded
+        let animationMixer = examplePlane0.components["animation-mixer"];
+        animationMixer.pause(); // pause the animation
+      });
+   
+      
+      sceneEl.addEventListener("arReady", (event) => {
+        // console.log("MindAR is ready")
+      });
+      sceneEl.addEventListener("arError", (event) => {
+        // console.log("MindAR failed to start")
+      });
+
+      const idButton = document.querySelector("#id-button");
+
+      // Crea un objeto que mapee los id de los elementos a los íconos que quieres mostrar
+      const idToIcon = {
+        "example-pause-sphere": '<i class="fas fa-dice-one" style="font-size: 24px;"></i>',
+        "example-pause-box": '<i class="fas fa-dice-two" style="font-size: 24px;"></i>',
+        // Agrega más mapeos aquí para los otros elementos
+      };
+
+      const sphere = document.querySelector("#example-pause-sphere");
+      sphere.addEventListener('click', () => {
+        idButton.innerHTML = idToIcon[sphere.id]; // Usa el mapeo para obtener el ícono
+      });
+
+    
+      let isMouseDown = false;
+
+      const audio = document.querySelector("#mySound");
+
+      sphere.addEventListener('mousedown', function (event) {
+        event.stopPropagation();
+        if (sphere.contains(event.target)) {
+          isMouseDown = true;
+          setTimeout(function () {
+            if (isMouseDown) {
+              audio.play();
+            }
+          }, 200); // Tiempo en milisegundos para distinguir entre un clic sencillo y un clic sostenido
+        }
+      });
+
+      sphere.addEventListener('mouseup', function (event) {
+        event.stopPropagation();
+        if (sphere.contains(event.target)) {
+          isMouseDown = false;
+          audio.pause();
+          audio.currentTime = 0; // Reinicia el audio
+        }
+      });
+
+    
+    });
+  </script>
+
+
+
+      <!-- Registro de componentes personalizados -->
+      <script>
+        AFRAME.registerComponent('mytarget', {
+            init: function () {
+                this.el.addEventListener('targetFound', event => {
+                    console.log("target found");
+                    // Mostrar el avatar y el panel del portafolio directamente
+                    document.querySelector("#example-plane-0").setAttribute("visible", true);
+                    document.querySelector("#portfolio-panel").setAttribute("visible", true);
+
+                    // Agregar el evento de clic al botón de vista previa
+                    const cokePreviewButton = document.querySelector("#coke-preview-button");
+                    cokePreviewButton.addEventListener('click', () => {
+                        cokePreviewButton.setAttribute("visible", false);
+                        const testVideo = document.createElement("video");
+                        const canplayWebm = testVideo.canPlayType('video/webm; codecs="vp8, vorbis"');
+
+                        if (canplayWebm == "") {
+                            document.querySelector("#coke-video-link").setAttribute("src", "#coke-video-mp4");
+                            document.querySelector("#coke-video-mp4").play();
+                        } else {
+                            document.querySelector("#coke-video-link").setAttribute("src", "#coke-video-webm");
+                            document.querySelector("#coke-video-webm").play();
+                        }
+
+                    });
+                });
+                this.el.addEventListener('targetLost', event => {
+                    console.log("target lost");
+                });
+                //this.el.emit('targetFound');
+            }
+        });
+    </script>
+
+
+
+
+  <style>
+    #start-button-container {
+      position: absolute;
+      z-index: 1000;
+    }
+
+    #menu {
+      position: absolute;
+      z-index: 1000;
+      left: 70px;
+      background-color: #f8f9fa;
+      border: 1px solid #dee2e6;
+      border-radius: 5px;
+      padding: 10px;
+      width: auto;
+      display: flex;
+      flex-direction: row;
+      flex-wrap: wrap;
+      /* Permite que los botones se ajusten al tamaño de la pantalla */
+    }
+
+    #menu button {
+      margin-right: 10px;
+      padding: 5px;
+      box-sizing: border-box;
+      flex: 1 1 auto;
+      /* Hace que los botones sean flexibles */
+    }
+  </style>
+</head>
+
+<body>
+  <div id="start-button-container">
+    <button id="example-start-button" data-action="start">
+      <i class="fas fa-vr-cardboard" style="font-size: 40px; color: red;"></i> <!-- Ajusta el color aquí -->
+    </button>
+  </div>
+
+  <div id="menu">
+    <button id="id-button">
+      <i class="fas fa-user-astronaut" style="font-size: 20px;"></i> <!-- Ícono de Font Awesome -->
+    </button>
+    <button id="example-jump-button" data-action="jump"><i class="fas fa-arrow-up"
+        style="font-size: 20px;"></i></button>
+    <button id="example-drop-button" data-action="drop"><i class="fas fa-arrow-down"
+        style="font-size: 20px;"></i></button>
+    <button id="example-left-button" data-action="left"><i class="fas fa-arrow-left"
+        style="font-size: 20px;"></i></button>
+    <button id="example-right-button" data-action="right"><i class="fas fa-arrow-right"
+        style="font-size: 20px;"></i></button>
+    <button id="example-rotateX-button" data-action="rotateX"><i class="fas fa-arrows-alt-v"
+        style="font-size: 20px;"></i></button>
+    <button id="example-rotateY-button" data-action="rotateY"><i class="fas fa-retweet"
+        style="font-size: 20px;"></i></button>
+    <button id="example-scaleUp-button" data-action="scaleUp"><i class="fas fa-search-plus"
+        style="font-size: 20px;"></i></button>
+    <button id="example-scaleDown-button" data-action="scaleDown"><i class="fas fa-search-minus"
+        style="font-size: 20px;"></i></button>
+
+  </div>
+
+<a-scene
+    mindar-image="imageTargetSrc: https://egometaar.github.io/assets/targets/targets.mind; maxTrack: 5; autoStart: false;"
+    color-space="sRGB" renderer="colorManagement: true, physicallyCorrectLights" vr-mode-ui="enabled: false"
+    device-orientation-permission-ui="enabled: false">
+
+      <a-assets>
+        <img crossorigin="anonymous" id="coke-preview"
+            src="https://egometaar.github.io/coke-preview.png" />
+        <video crossorigin="anonymous" id="coke-video-mp4" autoplay="false" loop="false"
+            src="https://egometaar.github.io/AR.mp4"></video>
+        <video crossorigin="anonymous" id="coke-video-webm" autoplay="false" loop="false"
+            src="https://egometaar.github.io/AR.webm"></video>
+
+        <a-asset-item id="ego"
+            src="https://egometaar.github.io/assets/models/musicband-raccoon/f000e_f000h/f000e_f000h.gltf"></a-asset-item>
+
+    </a-assets>
+   
+    <a-camera position="0 0 0" look-controls="enabled: false" cursor="fuse: false; rayOrigin: mouse;"
+      raycaster="near: 10; far: 10000; objects: .clickable"></a-camera>
+    
+      <a-entity id="mytarget" mytarget mindar-image-target="targetIndex: 0">
+
+        <a-entity visible=false id="portfolio-panel" position="0 0 -0.01">
+
+            <a-entity id="portfolio-item0">
+                <a-video id="coke-video-link" webkit-playsinline playsinline width="1" height="0.552"
+                    position="0 0 0"></a-video>
+                <a-image id="coke-preview-button" class="clickable" src="#coke-preview"
+                    alpha-test="0.5" position="0 0 0" height="0.552" width="1"></a-image>
+            </a-entity>
+
+      <a-gltf-model id="example-plane-0" class="clickable" rotation="0 0 0 " position="0 -0.25 0" scale="0.25 0.25 0.25"
+        src="#ego" animation-mixer>
+      </a-gltf-model>
+ 
+      <a-sphere id="example-pause-sphere" class="clickable" radius="0.15" color="green" opacity="0.5"
+        follow="target: #example-plane-0; distance: 0.8; angle: 0" position="0 0 0.1"> <!-- new pause sphere -->
+        <audio id="mySound" src="https://egometaar.github.io/sound2.mp3" autoplay="false"></audio>
+      </a-sphere>
+
+    </a-entity>
+ 
+</body>
+
+</html>
