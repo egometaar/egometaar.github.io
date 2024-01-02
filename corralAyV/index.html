@@ -1,0 +1,261 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css">
+    <script src="https://aframe.io/releases/1.4.2/aframe.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/gh/donmccurdy/aframe-extras/dist/aframe-extras.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/mind-ar@1.2.2/dist/mindar-image-aframe.prod.js"></script>
+    
+    <script> 
+    
+    document.addEventListener("DOMContentLoaded", function () {
+    // Variables y constantes comunes
+    const sceneEl = document.querySelector('a-scene');
+    const startButton = document.querySelector("#example-start-button");
+    let arSystem;
+    let isPaused = true; // define isPaused
+
+    // Variables y constantes específicas de audio
+    const examplePlane0 = document.querySelector('#example-plane-0');
+    const pauseSphere = document.querySelector("#example-pause-sphere");
+    const audio = document.querySelector("#mySound");
+    const sphere = document.querySelector("#example-pause-sphere");
+    let selectedModelId = 'example-plane-0'; // Inicialmente selecciona el modelo 'ego'
+    let isMouseDown = false;
+
+    // Variables y constantes específicas de video
+    const examplePlane1 = document.querySelector('#example-plane-1');
+    const cokeVideoButton = document.querySelector("#coke-Video-button");
+    const cokeVideo = document.querySelector("#coke-video-mp4");
+
+    // Funciones específicas de audio
+    function pauseOrResumeAnimation(modelId) {
+        let model = document.querySelector(modelId);
+        let animationMixer = model.components["animation-mixer"];
+        if (isPaused) {
+            animationMixer.pause();
+        }
+        else {
+            animationMixer.play();
+        }
+    }
+
+    function changeSphereColor() {
+        pauseColor = isPaused ? "red" : "green";
+        pauseSphere.setAttribute("color", pauseColor);
+    }
+
+    // Controladores de eventos comunes
+    sceneEl.addEventListener('loaded', function () {
+        arSystem = sceneEl.systems["mindar-image-system"];
+    });
+
+    startButton.addEventListener('click', () => {
+        console.log("start");
+        arSystem.start(); // start AR 
+    });
+
+    sceneEl.addEventListener("arReady", (event) => {
+    });
+
+    sceneEl.addEventListener("arError", (event) => {
+    });
+
+    // Controladores de eventos específicos de audio
+    pauseSphere.addEventListener('click', () => {
+        selectedModelId = 'example-plane-0';
+        isPaused = !isPaused;
+        pauseOrResumeAnimation('#' + selectedModelId);
+        changeSphereColor();
+    });
+
+    examplePlane0.addEventListener('click', () => {
+        selectedModelId = 'example-plane-0';
+        isPaused = !isPaused;
+        pauseOrResumeAnimation('#example-plane-0');
+        changeSphereColor();
+    });
+
+    examplePlane0.addEventListener('model-loaded', () => {
+        let animationMixer = examplePlane0.components["animation-mixer"];
+    });
+
+    audio.addEventListener('ended', function () {
+        isPaused = false;
+        pauseOrResumeAnimation('#example-plane-0');
+        changeSphereColor();
+        examplePlane0.setAttribute("visible", true); // Hace que el modelo 3D aparezca
+    });
+
+    sphere.addEventListener('mousedown', function (event) {
+        event.stopPropagation();
+        if (sphere.contains(event.target)) {
+            isMouseDown = true;
+        }
+    });
+
+    sphere.addEventListener('mouseup', function (event) {
+        event.stopPropagation();
+        if (sphere.contains(event.target)) {
+            isMouseDown = false;
+        }
+    });
+
+    sphere.addEventListener('click', function (event) {
+        event.stopPropagation();
+        if (sphere.contains(event.target)) {
+            if (!audio.paused) {
+                audio.pause();
+                examplePlane0.setAttribute("visible", true); // Hace que el modelo 3D aparezca
+            }
+            else {
+                audio.play();
+                examplePlane0.setAttribute("visible", false); // Hace que el modelo 3D desaparezca
+            }
+        }
+    });
+
+    // Controladores de eventos específicos de video
+    cokeVideoButton.addEventListener('click', () => {
+        examplePlane1.setAttribute("visible", false);
+    });
+
+    cokeVideo.addEventListener('ended', () => {
+        examplePlane1.setAttribute("visible", true);
+    });
+});
+
+AFRAME.registerComponent('mytarget1', {
+    init: function () {
+        this.el.addEventListener('targetFound', event => {
+            console.log("target 1 found");
+            document.querySelector("#portfolio-video").setAttribute("visible", true);
+            const cokeVideoButton = document.querySelector("#coke-Video-button");
+            cokeVideoButton.addEventListener('click', () => {
+                cokeVideoButton.setAttribute("visible", false);
+                document.querySelector("#coke-video-link").setAttribute("src", "#coke-video-mp4");
+                document.querySelector("#coke-video-mp4").play();
+            });
+        });
+        this.el.addEventListener('targetLost', event => {
+            console.log("target 1 lost");
+            document.querySelector("#coke-video-mp4").pause();
+            document.querySelector("#portfolio-video").setAttribute("visible", false);
+            document.querySelector("#coke-video-mp4").currentTime = 0;
+        });
+    }
+});
+
+
+    </script>
+
+
+<style>
+    
+    body {
+  background-image: url("http://127.0.0.1:5500/corral/corralAyV/fondo.jpg");
+  background-repeat: no-repeat;
+  background-attachment: fixed;
+}
+
+@media (orientation: portrait) {
+  body {
+    background-size: auto 100%; /* Ajusta la imagen al alto de la pantalla, manteniendo su proporción original */
+    background-position: center; /* Centra la imagen en la pantalla */
+  }
+}
+
+@media (orientation: landscape) {
+  body {
+    background-size: 100% auto; /* Ajusta la imagen al ancho de la pantalla, manteniendo su proporción original */
+    background-position: center; /* Centra la imagen en la pantalla */
+  }
+}
+
+    #start-button-container {
+        position: absolute;
+        z-index: 1000;
+    }
+
+    #menu {
+        position: absolute;
+        z-index: 1000;
+        left: 70px;
+        background-color: #f8f9fa;
+        border: 1px solid #dee2e6;
+        border-radius: 5px;
+        padding: 10px;
+        width: auto;
+        display: flex;
+        flex-direction: row;
+        flex-wrap: wrap;
+    }
+
+    #menu button {
+        margin-right: 10px;
+        padding: 5px;
+        box-sizing: border-box;
+        flex: 1 1 auto;
+    }
+</style>
+
+</head>
+
+<body>
+    <div id="start-button-container">
+        <button id="example-start-button" data-action="start">
+            <i class="fas fa-vr-cardboard" style="font-size: 40px; color: red;"></i> <!-- Ajusta el color aquí -->
+        </button>
+    </div>
+
+
+    <a-scene
+    mindar-image="imageTargetSrc: https://armetaego.co/targets.mind; autoStart: false;"
+    color-space="sRGB" renderer="colorManagement: true, physicallyCorrectLights" vr-mode-ui="enabled: false"
+    device-orientation-permission-ui="enabled: false">
+
+   
+        <a-assets>
+            <img crossorigin="anonymous" id="coke-Video"
+                src="https://armetaego.co/corralVideo.png" />
+            <video crossorigin="anonymous" id="coke-video-mp4" autoplay="false" loop="false"
+                src="https://armetaego.co/CorrarVideo.mp4"></video>
+                <audio crossorigin="anonymous" id="mySound"
+                    src="https://armetaego.co/corralAudio.mp3" autoplay="false"></audio>
+            <a-asset-item id="ego" src="https://armetaego.co/corrarCapBIG.gltf"></a-asset-item>
+        </a-assets>
+
+        <a-camera position="0 0 0" look-controls="enabled: false" cursor="fuse: false; rayOrigin: mouse;"
+            raycaster="near: 10; far: 10000; objects: .clickable"></a-camera>
+
+            <a-entity id="mytarget1" mytarget1 mindar-image-target="targetIndex: 1" visible-when-target-found>
+                <a-entity id="portfolio-video" position="0 0 -0.01">
+                    <a-entity id="portfolio-item0">
+                        <a-entity id="coke-Video-button" class="clickable"
+                            geometry="primitive: plane; width: 1; height: 0.552"
+                            material="src: #coke-Video; alpha-test: 0.5" position="0 0 0.01"></a-entity>
+                           <a-plane id="coke-video-link" width="1" height="0.552"
+                            material="src: #coke-video-mp4; transparent: true" position="0 0 0" video-controls></a-plane>
+                    </a-entity>
+                    <a-gltf-model id="example-plane-1" class="clickable" rotation="0 0 0 " position="0 -0.25 0"
+                        scale="0.25 0.25 0.25" src="#ego" animation-mixer>
+                    </a-gltf-model>
+                </a-entity>
+            </a-entity>  
+
+
+            <a-entity id="mytarget0" mindar-image-target="targetIndex: 0" visible-when-target-found>
+                <a-gltf-model id="example-plane-0" class="clickable" rotation="0 0 0 " position="0 -0.25 0"
+                    scale="0.25 0.25 0.25" src="#ego" animation-mixer>
+                </a-gltf-model>
+                <a-sphere id="example-pause-sphere" class="clickable" radius="0.5" color="green" opacity="0.0"
+                    follow="mytarget0: #example-plane-0; distance: 0.8; angle: 0" position="0 0.2 0.1">
+                    <audio id="mySound" src="#mySound" autoplay="false"></audio>
+                </a-sphere>
+            </a-entity>
+
+    </a-scene>
+</body>
+</html>
